@@ -9,3 +9,7 @@ postman
 
 
 ![image](https://user-images.githubusercontent.com/115841974/208264849-4596098f-ebef-4d54-9632-e59ba5db8b72.png)
+
+
+logs will be generatedin this path 
+![image](https://user-images.githubusercontent.com/115841974/208264918-077ee160-a49b-4802-8ebd-942487499baf.png)
