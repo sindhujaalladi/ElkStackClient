@@ -1,0 +1,57 @@
+
+-> Elasticsearch security features have been automatically configured!
+-> Authentication is enabled and cluster connections are encrypted.
+
+->  Password for the elastic user (reset with `bin/elasticsearch-reset-password -u elastic`):
+  hVmW=qA=kGllttEO_Cx0
+
+->  HTTP CA certificate SHA-256 fingerprint:
+  01d36ee600443f01a0d70d80b19a55c2045aec79d0bfcd23d6e79cff1956c24e
+
+->  Configure Kibana to use this cluster:
+* Run Kibana and click the configuration link in the terminal when Kibana starts.
+* Copy the following enrollment token and paste it into Kibana in your browser (valid for the next 30 minutes):
+  eyJ2ZXIiOiI4LjMuMiIsImFkciI6WyIxOTIuMTY4LjEuMjM0OjkyMDAiXSwiZmdyIjoiMDFkMzZlZTYwMDQ0M2YwMWEwZDcwZDgwYjE5YTU1YzIwNDVhZWM3OWQwYmZjZDIzZDZlNzljZmYxOTU2YzI0ZSIsImtleSI6IjRtRGZIWVVCVC1lazVOejRtdHZBOnJaN3NWM290U091XzU0M1Rwc0UwX2cifQ==
+
+->  Configure other nodes to join this cluster:
+* On this node:
+  - Create an enrollment token with `bin/elasticsearch-create-enrollment-token -s node`.
+  - Uncomment the transport.host setting at the end of config/elasticsearch.yml.
+  - Restart Elasticsearch.
+* On other nodes:
+  - Start Elasticsearch with `bin/elasticsearch --enrollment-token <token>`, using the enrollment token that you generated.
+
+
+
+kibana system pwd
+PxlUwzVIQY3M8mAuO-HI
+
+
+http://localhost:9200/
+
+elastic search is working fine  by hitting above command and u need to run server on background
+
+http://localhost:5601/app/dev_tools#/console
+http://localhost:5601/
+
+kibana is working fine by hitting above 2nd step and u need to run server on background
+
+to run servers on background 
+kibana.bat
+elastic search.bat 
+
+
+to run logstash server up and running run below command 
+C:\Users\meela\Downloads\logstash-8.3.2-windows-x86_64\logstash-8.3.2\bin>logstash -f .\config\learn.conf --config.reload.automatic
+
+
+elasticsearch-reset-password -u elastic  to reset pwd for elastic 
+by doing above reset command new pwd will be generated and this pwd will given elastic search url ,kibana url 
+logstash inside learn.conf file u need to pwd .
+
+whether logs are updting in elastic search or not we can check via below 
+http://localhost:9200/_cat
+it will show all indces 
+http://loclahost:9200/_cat/_indices
+it will show index whic we created in learn.conf file that logstash will be there 
+http://localhost:9200/vehicleserviceapi.logstash/_search
