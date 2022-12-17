@@ -1,0 +1,218 @@
+Install kibana 8.3.2 logstash 8.3.2 and elastic search 8.3.2 
+after downloaded all above  packages and zip those folders 
+
+Elatsic search Installation 
+go to C:\Users\meela\Downloads\elasticsearch-8.3.2-windows-x86_64\elasticsearch-8.3.2\config path and open elatsicsearch .yml 
+and add below line 
+action.auto_create_index: .monitoring*,.watches,.triggered_watches,.watcher-history*,.ml*
+and go to C:\Users\meela\Downloads\elasticsearch-8.3.2-windows-x86_64\elasticsearch-8.3.2\bin path and type cmd in address bar and got cmd prompt and type elasticsearch.bat 
+it will install and generate enrollment token and username 
+and below will be printed on console 
+-> Elasticsearch security features have been automatically configured!
+-> Authentication is enabled and cluster connections are encrypted.
+
+->  Password for the elastic user (reset with `bin/elasticsearch-reset-password -u elastic`):
+  hVmW=qA=kGllttEO_Cx0
+
+->  HTTP CA certificate SHA-256 fingerprint:
+  01d36ee600443f01a0d70d80b19a55c2045aec79d0bfcd23d6e79cff1956c24e
+
+->  Configure Kibana to use this cluster:
+* Run Kibana and click the configuration link in the terminal when Kibana starts.
+* Copy the following enrollment token and paste it into Kibana in your browser (valid for the next 30 minutes):
+  eyJ2ZXIiOiI4LjMuMiIsImFkciI6WyIxOTIuMTY4LjEuMjM0OjkyMDAiXSwiZmdyIjoiMDFkMzZlZTYwMDQ0M2YwMWEwZDcwZDgwYjE5YTU1YzIwNDVhZWM3OWQwYmZjZDIzZDZlNzljZmYxOTU2YzI0ZSIsImtleSI6IjRtRGZIWVVCVC1lazVOejRtdHZBOnJaN3NWM290U091XzU0M1Rwc0UwX2cifQ==
+
+->  Configure other nodes to join this cluster:
+* On this node:
+  - Create an enrollment token with `bin/elasticsearch-create-enrollment-token -s node`.
+  - Uncomment the transport.host setting at the end of config/elasticsearch.yml.
+  - Restart Elasticsearch.
+* On other nodes:
+  - Start Elasticsearch with `bin/elasticsearch --enrollment-token <token>`, using the enrollment token that you generated.
+
+
+After above generation stop and again go to elasticsearch.yml and modify below things 
+xpack.security.http.ssl:
+here make enabled=false
+
+xpack.security.transport.ssl:
+ here make enabled=false
+ and again to elastic search bin folder and type cmd and type elasticsearch.bat 
+ now nodes will be installed and elasticsearch will be up and running 
+ once server is up and running hit website url 
+ http://localhhost:9200/
+ now security will be enabled it will prompt for user credentials 
+ username - elastic 
+ pwd - hVmW=qA=kGllttEO_Cx0
+ 
+ {
+  "name" : "DESKTOP-S94JB1A",
+  "cluster_name" : "elasticsearch",
+  "cluster_uuid" : "3onSSeV8QzeWdQENCTWuDQ",
+  "version" : {
+    "number" : "8.3.2",
+    "build_type" : "zip",
+    "build_hash" : "8b0b1f23fbebecc3c88e4464319dea8989f374fd",
+    "build_date" : "2022-07-06T15:15:15.901688194Z",
+    "build_snapshot" : false,
+    "lucene_version" : "9.2.0",
+    "minimum_wire_compatibility_version" : "7.17.0",
+    "minimum_index_compatibility_version" : "7.0.0"
+  },
+  "tagline" : "You Know, for Search"
+}
+if this o/p comes it is perefctly working fine
+ 
+ Kibana Installation 
+ 
+ elasticsearch-reset-password -u kibana 
+ By using above command reset the kibana pwd and go to C:\Users\meela\Downloads\kibana-8.3.2-windows-x86_64\kibana-8.3.2\config path and open kibana.yml
+ and uncomment below lines 
+ server.port: 5601
+server.host: "localhost"
+
+elasticsearch.hosts: ["http://localhost:9200"]
+elasticsearch.username: "kibana_system"
+and under 
+elasticsearch.password: "PxlUwzVIQY3M8mAuO-HI"
+u need to updated the pwd by above generatedcommand reset pwd kibana 
+and save it and go to C:\Users\meela\Downloads\kibana-8.3.2-windows-x86_64\kibana-8.3.2\bin path and type cmd 
+and type kibana .bat 
+kibana will be installed and up and running 
+once server is up 
+go to http://localhost:5601/
+it will prompt for user credenails 
+ username - elastic 
+ pwd - hVmW=qA=kGllttEO_Cx0
+ 
+ kibana page will be opened
+ http://localhost:5601/app/home#/ this page will be opened
+ 
+ 
+ Logstash Installation 
+ 
+ got to C:\Users\meela\Downloads\logstash-8.3.2-windows-x86_64\logstash-8.3.2\config this path and create a file call learn.conf 
+ this file am adding here
+ input {
+  file {
+	path => "C:/Users/meela/OneDrive/Documents/ELK/logs/elk-stack.log/spring.log"
+	start_position => beginning
+	ignore_older => 0
+  }
+}
+
+output {
+
+ stdout	 {	  
+	codec 	=> rubydebug
+  }
+
+  elasticsearch {
+     hosts  => ["http://localhost:9200"]
+	 index  =>  "vehicleserviceapi.logstash"
+	 user   =>  "elastic"
+	 password  => "hVmW=qA=kGllttEO_Cx0"
+	 
+   }
+}   
+
+
+
+above things are need to be added and save in this folder 
+and go to C:\Users\meela\Downloads\logstash-8.3.2-windows-x86_64\logstash-8.3.2\bin and type cmd andtype below command
+C:\Users\meela\Downloads\logstash-8.3.2-windows-x86_64\logstash-8.3.2\bin>LOGSTASH -F .\CONFIG\LEARN.CONF --CONFIG.RELOAD.AUTOMATIC
+logstash will be installed and up and running 
+
+now after servers are up & running 
+go to kibana page and create index what we created in conf file 
+Go to kibana page under HOME go down below and Managemnet->DEv toolsand open 
+under console type below 
+PUT vehicleserviceapi.logstash
+GET vehicleserviceapi.logstash/_search
+now index will be created .
+now hit the application all logs will be printing in logstash console 
+example below 
+
+
+ "@timestamp" => 2022-12-17T20:22:57.301174500Z,
+       "message" => "2022-12-17 14:22:56.605  INFO 16448 --- [http-nio-7800-exec-6] c.e.service.ElkstackInputTestingSerImp   : End of getAllElkStackData method[ElkstackInputTesting(id=2, username=AlladiSindhuja, descrption=i am learning logstash ELK stack, version=2.2)]\r",
+      "@version" => "1",
+         "event" => {
+        "original" => "2022-12-17 14:22:56.605  INFO 16448 --- [http-nio-7800-exec-6] c.e.service.ElkstackInputTestingSerImp   : End of getAllElkStackData method[ElkstackInputTesting(id=2, username=AlladiSindhuja, descrption=i am learning logstash ELK stack, version=2.2)]\r"
+    }
+}
+{
+          "host" => {
+        "name" => "DESKTOP-S94JB1A"
+    },
+           "log" => {
+        "file" => {
+            "path" => "C:/Users/meela/OneDrive/Documents/ELK/logs/elk-stack.log/spring.log"
+        }
+    },
+    "@timestamp" => 2022-12-17T20:22:57.300677800Z,
+       "message" => "2022-12-17 14:22:56.290  INFO 16448 --- [http-nio-7800-exec-6] c.e.service.ElkstackInputTestingSerImp   : Beginning of getAllElkStackData method\r",
+      "@version" => "1",
+         "event" => {
+        "original" => "2022-12-17 14:22:56.290  INFO 16448 --- [http-nio-7800-exec-6] c.e.service.ElkstackInputTestingSerImp   : Beginning of getAllElkStackData method\r"
+    }
+}
+{
+          "host" => {
+        "name" => "DESKTOP-S94JB1A"
+    },
+           "log" => {
+        "file" => {
+            "path" => "C:/Users/meela/OneDrive/Documents/ELK/logs/elk-stack.log/spring.log"
+        }
+    },
+    "@timestamp" => 2022-12-17T20:22:57.301174500Z,
+       "message" => "2022-12-17 14:22:56.605  INFO 16448 --- [http-nio-7800-exec-6] c.e.ElkStackClientController             : End of getAllElkStackData method from controller\r",
+      "@version" => "1",
+         "event" => {
+        "original" => "2022-12-17 14:22:56.605  INFO 16448 --- [http-nio-7800-exec-6] c.e.ElkStackClientController             : End of getAllElkStackData method from controller\r"
+    }
+}
+{
+          "host" => {
+        "name" => "DESKTOP-S94JB1A"
+    },
+           "log" => {
+        "file" => {
+            "path" => "C:/Users/meela/OneDrive/Documents/ELK/logs/elk-stack.log/spring.log"
+        }
+    },
+    "@timestamp" => 2022-12-17T20:22:57.299721900Z,
+       "message" => "2022-12-17 14:22:56.289  INFO 16448 --- [http-nio-7800-exec-6] c.e.ElkStackClientController             : Beginning of getAllElkStackData method from controller\r",
+      "@version" => "1",
+         "event" => {
+        "original" => "2022-12-17 14:22:56.289  INFO 16448 --- [http-nio-7800-exec-6] c.e.ElkStackClientController             : Beginning of getAllElkStackData method from controller\r"
+    }
+}
+
+
+whether logs are updting in elastic search or not we can check via below 
+http://localhost:9200/_cat
+it will show all indces 
+http://loclahost:9200/_cat/_indices
+it will show index whic we created in learn.conf file that logstash will be there 
+http://localhost:9200/vehicleserviceapi.logstash/_search
+
+example 
+
+
+{"took":1838,"timed_out":false,"_shards":{"total":1,"successful":1,"skipped":0,"failed":0},"hits":{"total":{"value":9,"relation":"eq"},"max_score":1.0,"hits":[{"_index":"vehicleserviceapi.logstash","_id":"HjenIYUBz2u9dysOwkzN","_score":1.0,"_source":{"host":{"name":"DESKTOP-S94JB1A"},"log":{"file":{"path":"C:/Users/meela/OneDrive/Documents/ELK/logs/vehicle-service-logs/spring.log"}},"@timestamp":"2022-12-17T19:55:20.492047100Z","message":"2022-12-17 13:55:19.764  INFO 19884 --- [http-nio-8282-exec-6] com.vehicleservice.VehicleController     : Beginning of getLandServiceData method\r","@version":"1","event":{"original":"2022-12-17 13:55:19.764  INFO 19884 --- [http-nio-8282-exec-6] com.vehicleservice.VehicleController     : Beginning of getLandServiceData method\r"}}},{"_index":"vehicleserviceapi.logstash","_id":"HTenIYUBz2u9dysOwkzH","_score":1.0,"_ignored":["message.keyword","event.original.keyword"],"_source":{"host":{"name":"DESKTOP-S94JB1A"},"log":{"file":{"path":"C:/Users/meela/OneDrive/Documents/ELK/logs/vehicle-service-logs/spring.log"}},"@timestamp":"2022-12-17T19:55:20.497946700Z","message":"2022-12-17 13:55:19.785  INFO 19884 --- [http-nio-8282-exec-6] c.v.service.VehicleServiceImp            : End of getLandServiceData method from service [Registration(registrationid=12, registrationservicename=LAND-SERVICE, registrationownername=sindhu, registrationfees=1500.0, registrationLocation=NTPC), Registration(registrationid=22, registrationservicename=LAND-SERVICE, registrationownername=SAI, registrationfees=3500.0, registrationLocation=Newyork)]\r","@version":"1","event":{"original":"2022-12-17 13:55:19.785  INFO 19884 --- [http-nio-8282-exec-6] c.v.service.VehicleServiceImp            : End of getLandServiceData method from service [Registration(registrationid=12, registrationservicename=LAND-SERVICE, registrationownername=sindhu, registrationfees=1500.0, registrationLocation=NTPC), Registration(registrationid=22, registrationservicename=LAND-SERVICE, registrationownername=SAI, registrationfees=3500.0, registrationLocation=Newyork)]\r"}}},{"_index":"vehicleserviceapi.logstash","_id":"ITenIYUBz2u9dysO7kxe","_score":1.0,"_source":{"host":{"name":"DESKTOP-S94JB1A"},"log":{"file":{"path":"C:/Users/meela/OneDrive/Documents/ELK/logs/vehicle-service-logs/spring.log"}},"@timestamp":"2022-12-17T19:55:31.658398Z","message":"2022-12-17 13:55:31.093  INFO 19884 --- [http-nio-8282-exec-7] com.vehicleservice.VehicleController     : Beginning of getVehicleServiceData method\r","@version":"1","event":{"original":"2022-12-17 13:55:31.093  INFO 19884 --- [http-nio-8282-exec-7] com.vehicleservice.VehicleController     : Beginning of getVehicleServiceData method\r"}}},{"_index":"vehicleserviceapi.logstash","_id":"IjenIYUBz2u9dysO7kxu","_score":1.0,"_source":{"host":{"name":"DESKTOP-S94JB1A"},"log":{"file":{"path":"C:/Users/meela/OneDrive/Documents/ELK/logs/vehicle-service-logs/spring.log"}},"@timestamp":"2022-12-17T19:55:31.659397Z","message":"2022-12-17 13:55:31.095  INFO 19884 --- [http-nio-8282-exec-7] c.v.service.VehicleServiceImp            : Beginning of getVehicleServiceData method from service class\r","@version":"1","event":{"original":"2022-12-17 13:55:31.095  INFO 19884 --- [http-nio-8282-exec-7] c.v.service.VehicleServiceImp            : Beginning of getVehicleServiceData method from service class\r"}}},{"_index":"vehicleserviceapi.logstash","_id":"IzenIYUBz2u9dysO7kxv","_score":1.0,"_ignored":["message.keyword","event.original.keyword"],"_source":{"host":{"name":"DESKTOP-S94JB1A"},"log":{"file":{"path":"C:/Users/meela/OneDrive/Documents/ELK/logs/vehicle-service-logs/spring.log"}},"@timestamp":"2022-12-17T19:55:31.660422400Z","message":"2022-12-17 13:55:31.140  INFO 19884 --- [http-nio-8282-exec-7] com.vehicleservice.VehicleController     : End of getVehicleServiceData method[Response(registration=[Registration(registrationid=10, registrationservicename=VEHICLE-SERVICE, registrationownername=sindhu, registrationfees=1000.0, registrationLocation=Ramagundam), Registration(registrationid=16, registrationservicename=VEHICLE-SERVICE, registrationownername=SHIVA, registrationfees=1500.0, registrationLocation=hasthinapuram), Registration(registrationid=20, registrationservicename=VEHICLE-SERVICE, registrationownername=SAI, registrationfees=3000.0, registrationLocation=BOSTON)], vehicle=[Vehicle(vehiclenum=20, vehicleownername=Sindhuja, vehicletype=four seater, vehiclename=CAR), Vehicle(vehiclenum=22, vehicleownername=sai, vehicletype=two seater, vehiclename=LAMBORGINI), Vehicle(vehiclenum=24, vehicleownername=SHIVA, vehicletype=four seater, vehiclename=SUBARU), Vehicle(vehiclenum=26, vehicleownername=sindhuja alladi, vehicletype=many seater, vehiclename=FLIGHT)])]\r","@version":"1","event":{"original":"2022-12-17 13:55:31.140  INFO 19884 --- [http-nio-8282-exec-7] com.vehicleservice.VehicleController     : End of getVehicleServiceData method[Response(registration=[Registration(registrationid=10, registrationservicename=VEHICLE-SERVICE, registrationownername=sindhu, registrationfees=1000.0, registrationLocation=Ramagundam), Registration(registrationid=16, registrationservicename=VEHICLE-SERVICE, registrationownername=SHIVA, registrationfees=1500.0, registrationLocation=hasthinapuram), Registration(registrationid=20, registrationservicename=VEHICLE-SERVICE, registrationownername=SAI, registrationfees=3000.0, registrationLocation=BOSTON)], vehicle=[Vehicle(vehiclenum=20, vehicleownername=Sindhuja, vehicletype=four seater, vehiclename=CAR), Vehicle(vehiclenum=22, vehicleownername=sai, vehicletype=two seater, vehiclename=LAMBORGINI), Vehicle(vehiclenum=24, vehicleownername=SHIVA, vehicletype=four seater, vehiclename=SUBARU), Vehicle(vehiclenum=26, vehicleownername=sindhuja alladi, vehicletype=many seater, vehiclename=FLIGHT)])]\r"}}},{"_index":"vehicleserviceapi.logstash","_id":"JDeqIYUBz2u9dysOZ0xy","_score":1.0,"_source":{"host":{"name":"DESKTOP-S94JB1A"},"log":{"file":{"path":"C:/Users/meela/OneDrive/Documents/ELK/logs/vehicle-service-logs/spring.log"}},"@timestamp":"2022-12-17T19:58:13.723198100Z","message":"2022-12-17 13:58:13.642  INFO 19884 --- [AsyncResolver-bootstrap-executor-0] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration\r","@version":"1","event":{"original":"2022-12-17 13:58:13.642  INFO 19884 --- [AsyncResolver-bootstrap-executor-0] c.n.d.s.r.aws.ConfigClusterResolver      : Resolving eureka endpoints via configuration\r"}}},{"_index":"vehicleserviceapi.logstash","_id":"HDenIYUBz2u9dysOwkzE","_score":1.0,"_ignored":["message.keyword","event.original.keyword"],"_source":{"host":{"name":"DESKTOP-S94JB1A"},"log":{"file":{"path":"C:/Users/meela/OneDrive/Documents/ELK/logs/vehicle-service-logs/spring.log"}},"@timestamp":"2022-12-17T19:55:20.498706500Z","message":"2022-12-17 13:55:19.786  INFO 19884 --- [http-nio-8282-exec-6] com.vehicleservice.VehicleController     : End of getLandServiceData method[Registration(registrationid=12, registrationservicename=LAND-SERVICE, registrationownername=sindhu, registrationfees=1500.0, registrationLocation=NTPC), Registration(registrationid=22, registrationservicename=LAND-SERVICE, registrationownername=SAI, registrationfees=3500.0, registrationLocation=Newyork)]\r","@version":"1","event":{"original":"2022-12-17 13:55:19.786  INFO 19884 --- [http-nio-8282-exec-6] com.vehicleservice.VehicleController     : End of getLandServiceData method[Registration(registrationid=12, registrationservicename=LAND-SERVICE, registrationownername=sindhu, registrationfees=1500.0, registrationLocation=NTPC), Registration(registrationid=22, registrationservicename=LAND-SERVICE, registrationownername=SAI, registrationfees=3500.0, registrationLocation=Newyork)]\r"}}},{"_index":"vehicleserviceapi.logstash","_id":"IDenIYUBz2u9dysO7kxe","_score":1.0,"_ignored":["message.keyword","event.original.keyword"],"_source":{"host":{"name":"DESKTOP-S94JB1A"},"log":{"file":{"path":"C:/Users/meela/OneDrive/Documents/ELK/logs/vehicle-service-logs/spring.log"}},"@timestamp":"2022-12-17T19:55:31.659397Z","message":"2022-12-17 13:55:31.139  INFO 19884 --- [http-nio-8282-exec-7] c.v.service.VehicleServiceImp            : End of createVehicleData method from service [Response(registration=[Registration(registrationid=10, registrationservicename=VEHICLE-SERVICE, registrationownername=sindhu, registrationfees=1000.0, registrationLocation=Ramagundam), Registration(registrationid=16, registrationservicename=VEHICLE-SERVICE, registrationownername=SHIVA, registrationfees=1500.0, registrationLocation=hasthinapuram), Registration(registrationid=20, registrationservicename=VEHICLE-SERVICE, registrationownername=SAI, registrationfees=3000.0, registrationLocation=BOSTON)], vehicle=[Vehicle(vehiclenum=20, vehicleownername=Sindhuja, vehicletype=four seater, vehiclename=CAR), Vehicle(vehiclenum=22, vehicleownername=sai, vehicletype=two seater, vehiclename=LAMBORGINI), Vehicle(vehiclenum=24, vehicleownername=SHIVA, vehicletype=four seater, vehiclename=SUBARU), Vehicle(vehiclenum=26, vehicleownername=sindhuja alladi, vehicletype=many seater, vehiclename=FLIGHT)])]\r","@version":"1","event":{"original":"2022-12-17 13:55:31.139  INFO 19884 --- [http-nio-8282-exec-7] c.v.service.VehicleServiceImp            : End of createVehicleData method from service [Response(registration=[Registration(registrationid=10, registrationservicename=VEHICLE-SERVICE, registrationownername=sindhu, registrationfees=1000.0, registrationLocation=Ramagundam), Registration(registrationid=16, registrationservicename=VEHICLE-SERVICE, registrationownername=SHIVA, registrationfees=1500.0, registrationLocation=hasthinapuram), Registration(registrationid=20, registrationservicename=VEHICLE-SERVICE, registrationownername=SAI, registrationfees=3000.0, registrationLocation=BOSTON)], vehicle=[Vehicle(vehiclenum=20, vehicleownername=Sindhuja, vehicletype=four seater, vehiclename=CAR), Vehicle(vehiclenum=22, vehicleownername=sai, vehicletype=two seater, vehiclename=LAMBORGINI), Vehicle(vehiclenum=24, vehicleownername=SHIVA, vehicletype=four seater, vehiclename=SUBARU), Vehicle(vehiclenum=26, vehicleownername=sindhuja alladi, vehicletype=many seater, vehiclename=FLIGHT)])]\r"}}},{"_index":"vehicleserviceapi.logstash","_id":"HzenIYUBz2u9dysOwkzY","_score":1.0,"_source":{"host":{"name":"DESKTOP-S94JB1A"},"log":{"file":{"path":"C:/Users/meela/OneDrive/Documents/ELK/logs/vehicle-service-logs/spring.log"}},"@timestamp":"2022-12-17T19:55:20.496945800Z","message":"2022-12-17 13:55:19.765  INFO 19884 --- [http-nio-8282-exec-6] c.v.service.VehicleServiceImp            : Beginning of getLandServiceData method from service \r","@version":"1","event":{"original":"2022-12-17 13:55:19.765  INFO 19884 --- [http-nio-8282-exec-6] c.v.service.VehicleServiceImp            : Beginning of getLandServiceData method from service \r"}}}]}}
+
+
+above logs printed in elastic search 
+
+and to check logs in kibana 
+go to kibana page 
+go to home down below Managemnet->stack management-kibana ->data views 
+click on  create data view 
+page will be opened and on left side created indexs will be present and on right side it will ask name timestamp field 
+under name what we craeted index in conf file that file name present on left side and give same name as under name and select timestamp under 2nd field 
+and click on create data view 
+next go to HOME under analytsics and click on discover 
+data will be present in that page 
+
